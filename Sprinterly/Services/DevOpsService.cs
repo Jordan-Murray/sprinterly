@@ -42,12 +42,52 @@ namespace Sprinterly.Services
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var teams = JsonSerializer.Deserialize<TeamResponse>(json);
-                return teams.Teams.Select(team => team.Name);
+                var teams = JsonSerializer.Deserialize<DevOpsResponse<Team>>(json);
+                return teams.Value.Select(team => team.Name);
             }
 
             return null;
         }
+
+        public async Task<List<Sprint>> FetchSprintsAsync()
+        {
+            var pageSize = 100;
+            var skip = 0;
+
+            var url = $"{_project}/_apis/work/teamsettings/iterations?api-version={_apiVersion}&$skip={skip}&$top={pageSize}";
+            var response = await _httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var sprints = JsonSerializer.Deserialize<DevOpsResponse<Sprint>>(json);
+                return sprints.Value;
+            }
+
+            return null;
+        }
+
+
+        public async Task<Sprint> FetchSprintByNameAsync(string name)
+        {
+            var sprints = await FetchSprintsAsync();
+            return sprints.First();
+        }
+        //public async Task<List<SprintStats>> AnalyzeSprintAsync(string sprintName, List<string> teamNames)
+        //{
+        //    var sprint = await FetchSprintByNameAsync(sprintName);
+        //    var teamStatsPromises = teamNames.Select(async teamName =>
+        //    {
+        //        var areaPaths = await FetchTeamAreaPathsAsync(teamName);
+        //        var workItemIds = await FetchWorkItemsAsync(sprint.Name, areaPaths);
+        //        var workItemDetails = await FetchWorkItemDetailsAsync(workItemIds);
+        //        var stats = await AnalyzeSprintAsync(sprint, workItemDetails, teamName);
+        //        return stats;
+        //    }).ToList();
+
+        //    var teamStats = await Task.WhenAll(teamStatsPromises);
+        //    return teamStats.ToList();
+        //}
 
     }
 }

@@ -2,9 +2,9 @@
 
 namespace Sprinterly.Models
 {
-    public class TeamResponse
+    public class DevOpsResponse<T>
     {
         [JsonPropertyName("value")]
-        public List<Team> Teams { get; set; } = new List<Team>();
+        public List<T> Value { get; set; } = new List<T>();
     }
 }

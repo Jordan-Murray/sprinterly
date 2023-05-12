@@ -9,5 +9,8 @@ namespace Sprinterly.Models
 
         [JsonPropertyName("finishDate")]
         public string FinishDate { get; set; }
+
+        [JsonPropertyName("timeFrame")]
+        public string TimeFrame { get; set; }
     }
 }
