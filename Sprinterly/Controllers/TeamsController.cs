@@ -15,13 +15,26 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetTeams()
+        public async Task<ActionResult<IEnumerable<string>>> GetTeams(string organization, string project)
         {
-            var teams = await _devOpsService.FetchTeamNamesAsync();
+            var teams = await _devOpsService.FetchTeamNamesAsync(organization, project);
 
             if (teams == null)
             {
                 return NotFound("Error fetching teams.");
+            }
+
+            return Ok(teams);
+        }
+
+        [HttpGet ("/areapaths")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAreaPaths(string organization, string project, string teamName)
+        {
+            var teams = await _devOpsService.FetchAreaPathsForTeam(organization, project, teamName);
+
+            if (teams == null)
+            {
+                return NotFound("Error fetching area paths for team.");
             }
 
             return Ok(teams);

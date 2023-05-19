@@ -15,9 +15,9 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetSprintNames()
+        public async Task<ActionResult<IEnumerable<string>>> GetSprintNames(string organization, string project)
         {
-            var sprints = await _devOpsService.FetchSprintsAsync();
+            var sprints = await _devOpsService.FetchSprintsAsync(organization, project);
 
             if (sprints == null)
             {
