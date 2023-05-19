@@ -17,7 +17,9 @@ namespace Sprinterly.Services
         private readonly string _apiVersion;
         private readonly IConfiguration _configuration;
 
-        public DevOpsService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        public DevOpsService(IHttpClientFactory httpClientFactory, 
+            IConfiguration configuration, 
+            ILogger<DevOpsService> logger)
         {
             _httpClientFactory = httpClientFactory;
             _httpClient = _httpClientFactory.CreateClient();
@@ -31,6 +33,7 @@ namespace Sprinterly.Services
             _httpClient.BaseAddress = new Uri($"https://dev.azure.com/");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
                 "Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($":{patToken}")));
+            _logger = logger;
         }
 
 
