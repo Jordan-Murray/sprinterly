@@ -9,6 +9,7 @@ namespace Sprinterly.Services
 {
     public class DevOpsService : IDevOpsService
     {
+        private ILogger _logger;
         private readonly IHttpClientFactory _httpClientFactory;
         private HttpClient _httpClient;
         private readonly string _organization;
@@ -23,7 +24,7 @@ namespace Sprinterly.Services
 
             _configuration = configuration;
 
-            var patToken = _configuration["AzureDevOps:PATToken"];
+            var patToken = _configuration["AzureDevOps_PATToken"];
             //var patToken = Environment.GetEnvironmentVariable("AzureDevOps_PATToken");
             _apiVersion = "7.0";
 
@@ -36,14 +37,24 @@ namespace Sprinterly.Services
         public async Task<IEnumerable<string>> FetchTeamNamesAsync(string organization, string project)
         {
             var url = $"{organization}/_apis/projects/{project}/teams?api-version={_apiVersion}";
-            var response = await _httpClient.GetAsync(url);
 
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var teams = JsonSerializer.Deserialize<DevOpsDTO<Team>>(json);
-                return teams.Value.Select(team => team.Name);
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var teams = JsonSerializer.Deserialize<DevOpsDTO<Team>>(json);
+                    return teams.Value.Select(team => team.Name);
+                }
             }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error fetching teams. PAT Token: {_configuration["AzureDevOps_PATToken"]}");
+                throw;
+            }
+
 
             return Enumerable.Empty<string>();
         }
