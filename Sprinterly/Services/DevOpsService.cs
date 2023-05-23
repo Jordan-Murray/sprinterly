@@ -205,6 +205,37 @@ namespace Sprinterly.Services
             return Enumerable.Empty<WorkItemDetail>();
         }
 
+        public async Task<List<WorkItemDetail>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
+        {
+            if (workItemIds.Count() == 0)
+            {
+                return new List<WorkItemDetail>();
+            }
+
+            string ids = string.Join(",", workItemIds);
+            string url = $"https://dev.azure.com/{organization}/{project}/_apis/wit/workitems?ids={ids}&api-version={_apiVersion}";
+
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    var workItemResponse = JsonSerializer.Deserialize<List<WorkItemDetail>>(json);
+                    return workItemResponse;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         //public async Task<List<SprintStats>> AnalyzeSprintAsync(string sprintName, List<string> teamNames)
         //{
         //    var sprint = await FetchSprintByNameAsync(sprintName);
