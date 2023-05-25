@@ -3,7 +3,7 @@ using Sprinterly.Services.Interfaces;
 
 namespace Sprinterly.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{organization}/{project}/[controller]")]
     [ApiController]
     public class SprintsController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetSprintNames(string organization, string project)
+        public async Task<ActionResult<IEnumerable<string>>> GetSprintNames([FromRoute] string organization, [FromRoute] string project)
         {
             var sprints = await _devOpsService.FetchSprintsAsync(organization, project);
 

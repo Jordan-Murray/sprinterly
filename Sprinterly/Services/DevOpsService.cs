@@ -7,6 +7,7 @@ using System;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Sprinterly.Services
 {
@@ -178,11 +179,11 @@ namespace Sprinterly.Services
             return Enumerable.Empty<int>();
         }
 
-        public async Task<List<WorkItemDetail>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
+        public async Task<List<WorkItem>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
         {
             if (workItemIds.Count() == 0)
             {
-                return new List<WorkItemDetail>();
+                return new List<WorkItem>();
             }
 
             string ids = string.Join(",", workItemIds);
@@ -196,7 +197,7 @@ namespace Sprinterly.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string json = await response.Content.ReadAsStringAsync();
-                    var workItemResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItemDetail>>(json);
+                    var workItemResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItem>>(json);
                     return workItemResponse.Value;
                 }
                 else
@@ -210,21 +211,63 @@ namespace Sprinterly.Services
             }
         }
 
-        //public async Task<List<SprintStats>> AnalyzeSprintAsync(string sprintName, List<string> teamNames)
-        //{
-        //    var sprint = await FetchSprintByNameAsync(sprintName);
-        //    var teamStatsPromises = teamNames.Select(async teamName =>
-        //    {
-        //        var areaPaths = await FetchTeamAreaPathsAsync(teamName);
-        //        var workItemIds = await FetchWorkItemsAsync(sprint.Name, areaPaths);
-        //        var workItemDetails = await FetchWorkItemDetailsAsync(workItemIds);
-        //        var stats = await AnalyzeSprintAsync(sprint, workItemDetails, teamName);
-        //        return stats;
-        //    }).ToList();
+        public async Task<WorkItem?> FetchWorkItemAsync(string organization, string project, int workItemId)
+        {
+            var url = $"{organization}/{project}/_apis/wit/workItems/{workItemId}?api-version={_apiVersion}&$expand=Relations";
 
-        //    var teamStats = await Task.WhenAll(teamStatsPromises);
-        //    return teamStats.ToList();
-        //}
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
 
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    var workItem = JsonSerializer.Deserialize<WorkItem>(content);
+                    return workItem;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception)
+            {
+
+                return null;
+            }
+        }
+
+        public int ExtractIdFromUrl(string url)
+        {
+            var match = Regex.Match(url, @"/workItems/(\d+)");
+            if (match.Success)
+            {
+                return int.Parse(match.Groups[1].Value);
+            }
+            else
+            {
+                throw new Exception("Failed to extract ID from URL");
+            }
+        }
+
+        public async Task<float> GetHoursSpentOnWorkItem(string organization, string project, int workItemId)
+        {
+            var workItem = await FetchWorkItemAsync(organization, project, workItemId);
+
+            var childTasks = new List<WorkItem>();
+            //if (workItem.Relations != null)
+            //{
+            //    foreach (var relation in workItem.Relations)
+            //    {
+            //        if (relation.Rel == "System.LinkTypes.Hierarchy-Forward")
+            //        {
+            //            var childId = ExtractIdFromUrl(relation.Url);
+            //            var childTask = await FetchWorkItemAsync(organization, project, childId);
+            //            childTasks.Add(childTask);
+            //        }
+            //    }
+            //}
+            return 10f;
+        }
     }
 }

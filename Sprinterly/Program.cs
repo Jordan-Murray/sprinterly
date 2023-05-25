@@ -5,6 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IDevOpsService, DevOpsService>();
+builder.Services.AddScoped<ISprintStatsService, SprintStatsService>();
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();

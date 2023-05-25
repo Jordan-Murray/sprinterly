@@ -3,7 +3,7 @@ using Sprinterly.Services.Interfaces;
 
 namespace Sprinterly.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{organization}/{project}/[controller]")]
     [ApiController]
     public class TeamsController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetTeams(string organization, string project)
+        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project)
         {
             var teams = await _devOpsService.FetchTeamNamesAsync(organization, project);
 
@@ -28,7 +28,8 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet ("/areapaths")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAreaPaths(string organization, string project, string teamName)
+        public async Task<ActionResult<IEnumerable<string>>> GetAreaPaths(
+            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string teamName)
         {
             var teams = await _devOpsService.FetchAreaPathsForTeam(organization, project, teamName);
 
