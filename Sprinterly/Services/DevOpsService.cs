@@ -1,4 +1,7 @@
 ﻿using Sprinterly.Models;
+using Sprinterly.Models.Sprints;
+using Sprinterly.Models.Teams;
+using Sprinterly.Models.WorkItems;
 using Sprinterly.Services.Interfaces;
 using System;
 using System.Net.Http.Headers;
@@ -175,36 +178,6 @@ namespace Sprinterly.Services
             return Enumerable.Empty<int>();
         }
 
-        public async Task<IEnumerable<WorkItemDetail>> FetchWorkItemDetailsAsync(IEnumerable<int> workItemIds, string organization, string project, string apiVersion)
-        {
-            if (!workItemIds.Any())
-            {
-                return Enumerable.Empty<WorkItemDetail>();
-            }
-
-            var ids = string.Join(",", workItemIds);
-            var url = $"https://dev.azure.com/{organization}/{project}/_apis/wit/workitems?ids={ids}&api-version={apiVersion}";
-
-            try
-            {
-                var response = await _httpClient.GetAsync(url);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var json = await response.Content.ReadAsStringAsync();
-                    var workItemDetailsResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItemDetail>>(json);
-                    return workItemDetailsResponse.Value;
-                }
-            }
-            catch (Exception ex)
-            {
-                // Log your error message here
-                Console.WriteLine("Error fetching work item details: " + ex.Message);
-            }
-
-            return Enumerable.Empty<WorkItemDetail>();
-        }
-
         public async Task<List<WorkItemDetail>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
         {
             if (workItemIds.Count() == 0)
@@ -213,7 +186,8 @@ namespace Sprinterly.Services
             }
 
             string ids = string.Join(",", workItemIds);
-            string url = $"https://dev.azure.com/{organization}/{project}/_apis/wit/workitems?ids={ids}&api-version={_apiVersion}";
+            string url =    $"{organization}/{project}/_apis/wit/workitems?ids={ids}&api-version={_apiVersion}";
+            var secondUrl = $"{organization}/{project}/_apis/wit/workitems?ids={ids}&api-version={_apiVersion}";
 
             try
             {
@@ -222,8 +196,8 @@ namespace Sprinterly.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string json = await response.Content.ReadAsStringAsync();
-                    var workItemResponse = JsonSerializer.Deserialize<List<WorkItemDetail>>(json);
-                    return workItemResponse;
+                    var workItemResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItemDetail>>(json);
+                    return workItemResponse.Value;
                 }
                 else
                 {

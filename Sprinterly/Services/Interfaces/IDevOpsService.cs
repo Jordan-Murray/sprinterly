@@ -1,4 +1,5 @@
-﻿using Sprinterly.Models;
+﻿using Sprinterly.Models.Sprints;
+using Sprinterly.Models.WorkItems;
 
 namespace Sprinterly.Services.Interfaces
 {

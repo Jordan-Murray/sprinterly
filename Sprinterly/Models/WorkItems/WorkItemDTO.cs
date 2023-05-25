@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sprinterly.Models
+namespace Sprinterly.Models.WorkItems
 {
     public class WorkItemDTO
     {

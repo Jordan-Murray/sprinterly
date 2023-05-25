@@ -1,4 +1,4 @@
-﻿namespace Sprinterly.Models
+﻿namespace Sprinterly.Models.Sprints
 {
     public class SprintStats
     {

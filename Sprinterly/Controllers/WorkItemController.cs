@@ -28,19 +28,19 @@ namespace Sprinterly.Controllers
             return Ok(workItems);
         }
 
-        [HttpGet] //ToDo change sprints and teams so can be past in as body
+        [HttpGet ("/detail")] //ToDo change sprints and teams so can be past in as body
         public async Task<ActionResult<IEnumerable<string>>> GetWorkDetailsInSprint(string organization, string project, string sprint, string team)
         {
             var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
             var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, sprint, workItems);
+            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
 
             if (workItemDetails == null)
             {
                 return NotFound("Error fetching work item details.");
             }
 
-            return Ok(workItems);
+            return Ok(workItemDetails);
         }
     }
 }
