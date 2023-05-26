@@ -16,68 +16,68 @@ namespace Sprinterly.Controllers
             _sprintStatsService = sprintStatsService;
         }
 
-        [HttpGet("velocity")]
-        public async Task<ActionResult<IEnumerable<string>>> GetVelocityInSprint(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
-        {
-            var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
-            var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
-            var velocity = _sprintStatsService.CalculateVelocity(workItemDetails);
+        //[HttpGet("velocity")]
+        //public async Task<ActionResult<IEnumerable<string>>> GetVelocityInSprint(
+        //    [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
+        //{
+        //    var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
+        //    var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
+        //    var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
+        //    var velocity = _sprintStatsService.CalculateVelocity(workItemDetails);
 
-            return Ok(velocity);
-        }
+        //    return Ok(velocity);
+        //}
 
-        [HttpGet("bugs")]
-        public async Task<ActionResult<IEnumerable<string>>> GetBugsCompletedInSprint(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
-        {
-            var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
-            var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
-            var bugsCompleted = _sprintStatsService.GetNumberOfBugs(workItemDetails);
+        //[HttpGet("bugs")]
+        //public async Task<ActionResult<IEnumerable<string>>> GetBugsCompletedInSprint(
+        //    [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
+        //{
+        //    var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
+        //    var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
+        //    var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
+        //    var bugsCompleted = _sprintStatsService.GetNumberOfBugs(workItemDetails);
 
-            return Ok(bugsCompleted);
-        }
+        //    return Ok(bugsCompleted);
+        //}
 
-        [HttpGet("userstories")]
-        public async Task<ActionResult<IEnumerable<string>>> GetUserStoriesCompletedInSprint(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
-        {
-            var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
-            var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
-            var completedUserStories = _sprintStatsService.GetNumberOfUserStories(workItemDetails);
+        //[HttpGet("userstories")]
+        //public async Task<ActionResult<IEnumerable<string>>> GetUserStoriesCompletedInSprint(
+        //    [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
+        //{
+        //    var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
+        //    var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
+        //    var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
+        //    var completedUserStories = _sprintStatsService.GetNumberOfUserStories(workItemDetails);
 
-            return Ok(completedUserStories);
-        }
+        //    return Ok(completedUserStories);
+        //}
 
-        [HttpGet("issues")]
-        public async Task<ActionResult<IEnumerable<string>>> GetIssuesCompletedInSprint(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
-        {
-            var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
-            var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
-            var completedIssues = _sprintStatsService.GetNumberOfIssues(workItemDetails);
+        //[HttpGet("issues")]
+        //public async Task<ActionResult<IEnumerable<string>>> GetIssuesCompletedInSprint(
+        //    [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
+        //{
+        //    var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
+        //    var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
+        //    var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
+        //    var completedIssues = _sprintStatsService.GetNumberOfIssues(workItemDetails);
 
-            return Ok(completedIssues);
-        }
+        //    return Ok(completedIssues);
+        //}
 
-        [HttpGet("time")]
-        public async Task<ActionResult<IEnumerable<string>>> GetHoursCompletedOnUserStory(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
-        {
-            var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
-            var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
-            var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
-            foreach (var workItemDetail in workItemDetails)
-            {
-                var hoursSpent = await _devOpsService.GetHoursSpentOnWorkItem(organization, project, workItemDetail.Id);
-                workItemDetail.HoursSpent = hoursSpent;
-            }
+        //[HttpGet("time")]
+        //public async Task<ActionResult<IEnumerable<string>>> GetHoursCompletedOnUserStory(
+        //    [FromRoute] string organization, [FromRoute] string project, [FromQuery] string sprint, [FromQuery] string team)
+        //{
+        //    var areaPaths = await _devOpsService.FetchAreaPathsForTeam(organization, project, team);
+        //    var workItems = await _devOpsService.FetchWorkItemsAsync(organization, project, sprint, areaPaths);
+        //    var workItemDetails = await _devOpsService.FetchWorkItemDetailsAsync(organization, project, workItems);
+        //    foreach (var workItemDetail in workItemDetails)
+        //    {
+        //        var hoursSpent = await _devOpsService.GetHoursSpentOnWorkItem(organization, project, workItemDetail.Id);
+        //        workItemDetail.HoursSpent = hoursSpent;
+        //    }
 
-            return Ok(workItemDetails);
-        }
+        //    return Ok(workItemDetails);
+        //}
     }
 }

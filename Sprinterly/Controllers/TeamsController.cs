@@ -7,17 +7,17 @@ namespace Sprinterly.Controllers
     [ApiController]
     public class TeamsController : ControllerBase
     {
-        private readonly IDevOpsService _devOpsService;
+        private readonly ITeamsService _teamsService;
 
-        public TeamsController(IDevOpsService devOpsService)
+        public TeamsController(ITeamsService teamsService)
         {
-            _devOpsService = devOpsService;
+            _teamsService = teamsService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project)
         {
-            var teams = await _devOpsService.FetchTeamNamesAsync(organization, project);
+            var teams = await _teamsService.FetchTeamsAsync(organization, project);
 
             if (teams == null)
             {
@@ -27,15 +27,15 @@ namespace Sprinterly.Controllers
             return Ok(teams);
         }
 
-        [HttpGet ("/areapaths")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAreaPaths(
-            [FromRoute] string organization, [FromRoute] string project, [FromQuery] string teamName)
+        [HttpGet("{teamId}")]
+        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project,
+            [FromRoute] string teamId)
         {
-            var teams = await _devOpsService.FetchAreaPathsForTeam(organization, project, teamName);
+            var teams = await _teamsService.GetTeamAsync(organization, project, teamId);
 
             if (teams == null)
             {
-                return NotFound("Error fetching area paths for team.");
+                return NotFound("Error fetching teams.");
             }
 
             return Ok(teams);
