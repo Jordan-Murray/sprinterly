@@ -4,7 +4,15 @@ namespace Sprinterly.Models.WorkItems
 {
     public class WorkItemDTO
     {
-        [JsonPropertyName("workItems")]
-        public List<WorkItem> Value { get; set; } = new List<WorkItem>();
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        [JsonPropertyName("fields")]
+        public WorkItemDetailsFields Fields { get; set; }
+
+        [JsonPropertyName("relations")]
+        public List<WorkItemRelations> Relations { get; set; }
+
+        public float HoursSpent { get; set; }
     }
 }

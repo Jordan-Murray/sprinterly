@@ -172,18 +172,18 @@ namespace Sprinterly.Services
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-                var workItemsResponse = JsonSerializer.Deserialize<WorkItemDTO>(json);
+                var workItemsResponse = JsonSerializer.Deserialize<WorkItemListDTO>(json);
                 return workItemsResponse.Value.Select(wi => wi.Id);
             }
 
             return Enumerable.Empty<int>();
         }
 
-        public async Task<List<WorkItem>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
+        public async Task<List<WorkItemDTO>> FetchWorkItemDetailsAsync(string organization, string project, IEnumerable<int> workItemIds)
         {
             if (workItemIds.Count() == 0)
             {
-                return new List<WorkItem>();
+                return new List<WorkItemDTO>();
             }
 
             string ids = string.Join(",", workItemIds);
@@ -197,7 +197,7 @@ namespace Sprinterly.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string json = await response.Content.ReadAsStringAsync();
-                    var workItemResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItem>>(json);
+                    var workItemResponse = JsonSerializer.Deserialize<DevOpsDTO<WorkItemDTO>>(json);
                     return workItemResponse.Value;
                 }
                 else
@@ -211,7 +211,7 @@ namespace Sprinterly.Services
             }
         }
 
-        public async Task<WorkItem?> FetchWorkItemAsync(string organization, string project, int workItemId)
+        public async Task<WorkItemDTO?> FetchWorkItemAsync(string organization, string project, int workItemId)
         {
             var url = $"{organization}/{project}/_apis/wit/workItems/{workItemId}?api-version={_apiVersion}&$expand=Relations";
 
@@ -222,7 +222,7 @@ namespace Sprinterly.Services
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
-                    var workItem = JsonSerializer.Deserialize<WorkItem>(content);
+                    var workItem = JsonSerializer.Deserialize<WorkItemDTO>(content);
                     return workItem;
                 }
                 else
@@ -254,20 +254,20 @@ namespace Sprinterly.Services
         {
             var workItem = await FetchWorkItemAsync(organization, project, workItemId);
 
-            var childTasks = new List<WorkItem>();
-            //if (workItem.Relations != null)
-            //{
-            //    foreach (var relation in workItem.Relations)
-            //    {
-            //        if (relation.Rel == "System.LinkTypes.Hierarchy-Forward")
-            //        {
-            //            var childId = ExtractIdFromUrl(relation.Url);
-            //            var childTask = await FetchWorkItemAsync(organization, project, childId);
-            //            childTasks.Add(childTask);
-            //        }
-            //    }
-            //}
-            return 10f;
+            var hoursSpent = 0f;
+            if (workItem.Relations != null)
+            {
+                foreach (var relation in workItem.Relations)
+                {
+                    if (relation.RelationshipType == "System.LinkTypes.Hierarchy-Forward")
+                    {
+                        var childId = ExtractIdFromUrl(relation.Url);
+                        var childTask = await FetchWorkItemAsync(organization, project, childId);
+                        hoursSpent += childTask.Fields.CompletedHours;
+                    }
+                }
+            }
+            return hoursSpent;
         }
     }
 }

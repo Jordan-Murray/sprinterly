@@ -76,7 +76,6 @@ namespace Sprinterly.Controllers
                 var hoursSpent = await _devOpsService.GetHoursSpentOnWorkItem(organization, project, workItemDetail.Id);
                 workItemDetail.HoursSpent = hoursSpent;
             }
-            //var completedIssues = _sprintStatsService.GetNumberOfIssues(workItemDetails);
 
             return Ok(workItemDetails);
         }

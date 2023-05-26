@@ -1,15 +1,19 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Sprinterly.Models.WorkItems
+﻿namespace Sprinterly.Models.WorkItems
 {
     public class WorkItem
     {
-        [JsonPropertyName("id")]
         public int Id { get; set; }
+        public string Title { get; set; }
+        public string AssignedTo { get; set; }
+        public string Type { get; set; }
+        public string IterationPath { get; set; }
+        public string State { get; set; }
+        public string AreaPath { get; set; }
+        public float StoryPoints { get; set; }
 
-        [JsonPropertyName("fields")]
-        public WorkItemDetailsFields Fields { get; set; }
-
-        public float HoursSpent { get; set; }
+        public WorkItem()
+        {
+                 
+        }
     }
 }

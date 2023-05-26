@@ -5,22 +5,22 @@ namespace Sprinterly.Services
 {
     public class SprintStatsService : ISprintStatsService
     {
-        public float CalculateVelocity(List<WorkItem> workItemDetails)
+        public float CalculateVelocity(List<WorkItemDTO> workItemDetails)
         {
             return workItemDetails.Sum(x => x.Fields.StoryPoints);
         }
 
-        public int GetNumberOfBugs(List<WorkItem> workItemDetails)
+        public int GetNumberOfBugs(List<WorkItemDTO> workItemDetails)
         {
             return workItemDetails.Count(w => w.Fields.WorkItemType == "Bug");
         }
 
-        public int GetNumberOfUserStories(List<WorkItem> workItemDetails)
+        public int GetNumberOfUserStories(List<WorkItemDTO> workItemDetails)
         {
             return workItemDetails.Count(w => w.Fields.WorkItemType == "User Story");
         }
 
-        public int GetNumberOfIssues(List<WorkItem> workItemDetails)
+        public int GetNumberOfIssues(List<WorkItemDTO> workItemDetails)
         {
             return workItemDetails.Count(w => w.Fields.WorkItemType == "Issue");
         }

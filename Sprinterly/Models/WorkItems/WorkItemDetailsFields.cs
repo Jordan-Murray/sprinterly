@@ -72,6 +72,12 @@ namespace Sprinterly.Models.WorkItems
 
         [JsonPropertyName("Microsoft.VSTS.Common.Risk")]
         public string Risk { get; set; }
+
+        [JsonPropertyName("Microsoft.VSTS.Scheduling.CompletedWork")]
+        public float CompletedHours { get; set; }
+
+        [JsonPropertyName("Microsoft.VSTS.Scheduling.OriginalEstimate")]
+        public float OriginalEstimate { get; set; }
     }
 
     public class AssignedTo
