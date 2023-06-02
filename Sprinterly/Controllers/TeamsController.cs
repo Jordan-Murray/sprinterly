@@ -3,7 +3,7 @@ using Sprinterly.Services.Interfaces;
 
 namespace Sprinterly.Controllers
 {
-    [Route("api/{organization}/{project}/[controller]")]
+    [Route("api/{organization}/{projectId}/[controller]")]
     [ApiController]
     public class TeamsController : ControllerBase
     {
@@ -15,9 +15,9 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project)
+        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string projectId)
         {
-            var teams = await _teamsService.FetchTeamsAsync(organization, project);
+            var teams = await _teamsService.GetTeamsAsync(organization, projectId);
 
             if (teams == null)
             {
@@ -28,17 +28,17 @@ namespace Sprinterly.Controllers
         }
 
         [HttpGet("{teamId}")]
-        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project,
+        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string projectId,
             [FromRoute] string teamId)
         {
-            var teams = await _teamsService.GetTeamAsync(organization, project, teamId);
+            var team = await _teamsService.GetTeamAsync(organization, projectId, teamId);
 
-            if (teams == null)
+            if (team == null)
             {
-                return NotFound("Error fetching teams.");
+                return NotFound($"Error fetching team with ID: {teamId}");
             }
 
-            return Ok(teams);
+            return Ok(team);
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Sprinterly.Models;
-using Sprinterly.Models.Teams;
 using Sprinterly.Services.Interfaces;
 
 namespace Sprinterly.Services
@@ -27,6 +26,11 @@ namespace Sprinterly.Services
             {
                 return Enumerable.Empty<Project>();
             }
+        }
+
+        public async Task<string> GetProjectNameById(string organization, string projectId)
+        {
+            return string.Empty;
         }
     }
 }

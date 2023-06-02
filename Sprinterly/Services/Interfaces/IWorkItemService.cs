@@ -1,6 +1,7 @@
 ﻿namespace Sprinterly.Services.Interfaces
 {
-    public interface IDeveloperService
+    public interface IWorkItemService
     {
+
     }
 }

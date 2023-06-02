@@ -4,10 +4,12 @@ namespace Sprinterly.Models.Teams
 {
     public class Team
     {
-        [JsonPropertyName("id")]
         public string Id { get; set; }
 
-        [JsonPropertyName("name")]
         public string Name { get; set; }
+
+        public List<TeamMember> TeamMembers { get; set; } = new List<TeamMember>();
+
+        public int NumberOfMembers { get; set; }   
     }
 }
