@@ -31,7 +31,7 @@ namespace Sprinterly.Controllers
         public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string project,
             [FromRoute] string teamName)
         {
-            var teams = await _teamsService.GetTeamAsync(organization, project, teamId);
+            var teams = await _teamsService.GetTeamAsync(organization, project, teamName);
 
             if (teams == null)
             {

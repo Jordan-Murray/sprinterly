@@ -17,10 +17,10 @@ namespace Sprinterly.Services
         {
             var url = $"{organization}/_apis/projects?api-version=7.0";
 
-            var projectsResult = await _devOpsService.MakeDevOpsCall<IEnumerable<ProjectDTO>>(url);
-            if(projectsResult.IsSuccessful)
+            var projectsResult = await _devOpsService.MakeDevOpsCall<DevOpsDTO<ProjectDTO>>(url);
+            if(projectsResult != null)
             {
-                var projects = projectsResult.Data.Adapt<IEnumerable<Project>>();
+                var projects = projectsResult.Value.Adapt<IEnumerable<Project>>();
                 return projects;
             }
             else

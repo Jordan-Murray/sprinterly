@@ -14,17 +14,17 @@ namespace Sprinterly.Controllers
             _devOpsService = devOpsService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<string>>> GetSprintNames([FromRoute] string organization, [FromRoute] string project)
-        {
-            var sprints = await _devOpsService.FetchSprintsAsync(organization, project);
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<string>>> GetSprintNames([FromRoute] string organization, [FromRoute] string project)
+        //{
+        //    var sprints = await _devOpsService.FetchSprintsAsync(organization, project);
 
-            if (sprints == null)
-            {
-                return NotFound("Error fetching sprints.");
-            }
+        //    if (sprints == null)
+        //    {
+        //        return NotFound("Error fetching sprints.");
+        //    }
 
-            return Ok(sprints.Select(x => x.Name));
-        }
+        //    return Ok(sprints.Select(x => x.Name));
+        //}
     }
 }

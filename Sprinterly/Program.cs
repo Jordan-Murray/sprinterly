@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IDevOpsService, DevOpsService>();
 builder.Services.AddScoped<ISprintStatsService, SprintStatsService>();
 builder.Services.AddScoped<ITeamsService, TeamsService>();
-
+builder.Services.AddScoped<IProjectsService, ProjectsService>();
 
 builder.Services.AddHttpClient();
 
