@@ -30,7 +30,8 @@ namespace Sprinterly.Services
 
         public async Task<string> GetProjectNameById(string organization, string projectId)
         {
-            return string.Empty;
+            var projects = await GetProjects(organization);
+            return projects.Where(x => x.Id == projectId).FirstOrDefault()?.Name ?? string.Empty;
         }
     }
 }

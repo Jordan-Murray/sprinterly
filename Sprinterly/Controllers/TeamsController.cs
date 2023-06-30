@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Sprinterly.Models.Teams;
+using Sprinterly.Services;
 using Sprinterly.Services.Interfaces;
 
 namespace Sprinterly.Controllers
@@ -27,11 +29,11 @@ namespace Sprinterly.Controllers
             return Ok(teams);
         }
 
-        [HttpGet("{teamId}")]
-        public async Task<ActionResult<IEnumerable<string>>> GetTeams([FromRoute] string organization, [FromRoute] string projectId,
-            [FromRoute] string teamId)
+        [HttpGet("{teamId}/sprint/{sprintId}")]
+        public async Task<ActionResult<IEnumerable<string>>> GetTeam([FromRoute] string organization, [FromRoute] string projectId,
+            [FromRoute] string teamId, [FromRoute] string sprintId)
         {
-            var team = await _teamsService.GetTeamAsync(organization, projectId, teamId);
+            var team = await _teamsService.GetTeamAsync(organization, projectId, teamId, sprintId);
 
             if (team == null)
             {

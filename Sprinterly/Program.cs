@@ -5,9 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddScoped<IDevOpsService, DevOpsService>();
-builder.Services.AddScoped<ISprintStatsService, SprintStatsService>();
+builder.Services.AddScoped<ISprintService, SprintService>();
 builder.Services.AddScoped<ITeamsService, TeamsService>();
 builder.Services.AddScoped<IProjectsService, ProjectsService>();
+builder.Services.AddScoped<IWorkItemService, WorkItemService>();
 
 builder.Services.AddHttpClient();
 

@@ -16,23 +16,22 @@ namespace Sprinterly.Services
         }
         public async Task<IEnumerable<Sprint>> GetSprintsForTeam(string organization, string projectId, string teamId)
         {
+            var sprintsToReturn = new List<Sprint>();
             var url = $"{organization}/{projectId}/{teamId}/_apis/work/teamsettings/iterations?api-version=7.0";
 
             var sprintsResult = await _devOpsService.MakeDevOpsCall<DevOpsDTO<SprintDTO>>(url);
             if (sprintsResult != null)
             {
-                var sprints = sprintsResult.Adapt<IEnumerable<Sprint>>();
-                return sprints;
+                foreach (var sprintDTO in sprintsResult.Value)
+                {
+                    sprintsToReturn.Add(sprintDTO.Adapt<Sprint>());
+                }
+                return sprintsToReturn;
             }
             else
             {
                 return Enumerable.Empty<Sprint>();
             }
-        }
-
-        public Task<Team> PopulateTeamWithStats(Team team, string sprintId)
-        {
-            //var sprint
         }
     }
 }

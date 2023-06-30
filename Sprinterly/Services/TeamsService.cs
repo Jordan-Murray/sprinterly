@@ -8,9 +8,25 @@ namespace Sprinterly.Services
     public class TeamsService : ITeamsService
     {
         IDevOpsService _devOpsService;
-        public TeamsService(IDevOpsService devOpsService)
+        ISprintService _sprintService;
+        IWorkItemService _workItemService;
+        public TeamsService(IDevOpsService devOpsService, ISprintService sprintService, IWorkItemService workItemService)
         {
             _devOpsService = devOpsService;
+            _sprintService = sprintService;
+            _workItemService = workItemService;
+        }
+
+        public async Task<List<TeamMember>> PopulateTeamMembersWithStats(string organization, string projectId, string teamId,
+            List<TeamMember> teamMembers, string sprintId)
+        {
+            var areaPaths = await FetchAreaPathsForTeam(organization, projectId, teamId);
+            var workItems = await _workItemService.FetchWorkItemsAsync(organization, projectId, teamId, sprintId, areaPaths);
+            //Get number of user stories completed per user
+            // bugs
+            //hours spent
+            //assign to users in team
+            return teamMembers;
         }
 
         public async Task<IEnumerable<Team>> GetTeamsAsync(string organization, string projectId)
@@ -37,23 +53,22 @@ namespace Sprinterly.Services
             }
         }
 
-        public async Task<Team?> GetTeamAsync(string organization, string projectId, string teamId)
+        public async Task<Team?> GetTeamAsync(string organization, string projectId, string teamId, string sprintId)
         {
             var url = $"{organization}/_apis/projects/{projectId}/teams/{teamId}?api-version=7.0";
 
             var teamResult = await _devOpsService.MakeDevOpsCall<TeamDTO>(url);
-            if (teamResult != null)
-            {
-                var team = teamResult.Adapt<Team>();
-                var teamMembers = await GetMembersForTeam(organization, projectId, teamId);
-                team.TeamMembers = teamMembers;
-                team.NumberOfMembers = teamMembers.Count;
-                return team;
-            }
-            else
+            if (teamResult == null)
             {
                 return null;
             }
+            
+            var team = teamResult.Adapt<Team>();
+            var teamMembers = await GetMembersForTeam(organization, projectId, teamId);
+            team.TeamMembers = teamMembers;
+            var teamMembersWithStats = await PopulateTeamMembersWithStats(organization, projectId, teamId, teamMembers, sprintId);
+            team.NumberOfMembers = teamMembers.Count;
+            return team;
         }
 
         private async Task<List<TeamMember>> GetMembersForTeam(string organization, string projectId ,string teamId)
@@ -94,21 +109,26 @@ namespace Sprinterly.Services
 
             var areaPathsResult = await _devOpsService.MakeDevOpsCall<DevOpsValuesDTO<TeamFieldValue>>(url);
 
-            if (areaPathsResult != null)
+                //var allAreaPaths = await FetchAreaPathsAsync(organization, projectId);
+                //var teamAreaPaths = new List<string>();
+
+                //foreach (var value in areaPathsResult.Value)
+                //{
+                //    var matchingAreaPaths = allAreaPaths.Where(path => path.Contains(value.Value));
+                //    teamAreaPaths.AddRange(matchingAreaPaths);
+                //}
+
+                //return teamAreaPaths;
+            if (areaPathsResult == null)
             {
-                var allAreaPaths = await FetchAreaPathsAsync(organization, projectId);
-                var teamAreaPaths = new List<string>();
-
-                foreach (var value in areaPathsResult.Value)
-                {
-                    var matchingAreaPaths = allAreaPaths.Where(path => path.Contains(value.Value));
-                    teamAreaPaths.AddRange(matchingAreaPaths);
-                }
-
-                return teamAreaPaths;
+                return Enumerable.Empty<string>();
             }
-
-            return Enumerable.Empty<string>();
+            var areaPaths = new List<string>();
+            areaPathsResult.Value.ForEach(x =>
+            {
+                areaPaths.Add(x.Value.ToString());
+            });
+            return areaPaths;
         }
 
         public async Task<IEnumerable<string>> FetchAreaPathsAsync(string organization, string project)
@@ -127,6 +147,8 @@ namespace Sprinterly.Services
 
             return Enumerable.Empty<string>();
         }
+
+
 
         //public async Task<Team?> GetTeamAsync(string organization, string project, string teamId)
         //{

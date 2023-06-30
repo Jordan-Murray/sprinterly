@@ -19,7 +19,7 @@ namespace Sprinterly.Controllers
             _teamsService = teamsService;
         }
 
-        [HttpGet]
+        [HttpGet("{teamId}")]
         public async Task<ActionResult<IEnumerable<Sprint>>> GetSprinsForTeam([FromRoute] string organization, [FromRoute] string projectId,
             [FromRoute] string teamId)
         {
@@ -31,22 +31,6 @@ namespace Sprinterly.Controllers
             }
 
             return Ok(sprints);
-        }
-
-        [HttpGet()]
-        public async Task<ActionResult<Team>> GetSprintStatsForTeam(
-            [FromRoute] string organization, [FromRoute] string projectId, [FromQuery] string teamId, [FromQuery] string sprintId)
-        {
-            var team = await _teamsService.GetTeamAsync(organization, projectId, teamId);
-
-            if (team == null)
-            {
-                return NotFound($"Error fetching team with ID: {teamId}.");
-            }
-
-            var teamWithStats = _sprintService.PopulateTeamWithStats(team, sprintId);
-
-            return Ok(teamWithStats);
         }
     }
 }
