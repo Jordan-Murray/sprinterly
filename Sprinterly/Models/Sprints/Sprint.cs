@@ -1,7 +1,4 @@
-﻿using Mapster;
-using System.Text.Json.Serialization;
-
-namespace Sprinterly.Models.Sprints
+﻿namespace Sprinterly.Models.Sprints
 {
     public class Sprint
     {

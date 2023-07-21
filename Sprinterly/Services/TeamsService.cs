@@ -1,20 +1,26 @@
 ﻿using Sprinterly.Models.Teams;
 using Sprinterly.Models;
 using Sprinterly.Services.Interfaces;
-using Mapster;
+using AutoMapper;
 
 namespace Sprinterly.Services
 {
     public class TeamsService : ITeamsService
     {
-        IDevOpsService _devOpsService;
-        ISprintService _sprintService;
-        IWorkItemService _workItemService;
-        public TeamsService(IDevOpsService devOpsService, ISprintService sprintService, IWorkItemService workItemService)
+        private readonly IDevOpsService _devOpsService;
+        private readonly ISprintService _sprintService;
+        private readonly IWorkItemService _workItemService;
+        private readonly IMapper _mapper;
+
+        public TeamsService(IDevOpsService devOpsService, 
+            ISprintService sprintService, 
+            IWorkItemService workItemService, 
+            IMapper mapper)
         {
             _devOpsService = devOpsService;
             _sprintService = sprintService;
             _workItemService = workItemService;
+            _mapper = mapper;
         }
 
         public async Task<List<TeamMember>> PopulateTeamMembersWithStats(string organization, string projectId, string teamId,
@@ -22,10 +28,15 @@ namespace Sprinterly.Services
         {
             var areaPaths = await FetchAreaPathsForTeam(organization, projectId, teamId);
             var workItems = await _workItemService.FetchWorkItemsAsync(organization, projectId, teamId, sprintId, areaPaths);
-            //Get number of user stories completed per user
-            // bugs
-            //hours spent
-            //assign to users in team
+            foreach (var teamMember in teamMembers)
+            {
+                var memberWorkItems = workItems.Where(w => w.AssignedTo == teamMember.DisplayName).ToList();
+
+                teamMember.UserStoriesCompleted = memberWorkItems.Count(w => w.Type == "User Story" && w.State == "Closed");
+                teamMember.BugsCompleted = memberWorkItems.Count(w => w.Type == "Bug" && w.State == "Closed");
+                teamMember.IssuesCompleted = memberWorkItems.Count(w => w.Type == "Issue" && w.State == "Closed");
+                teamMember.Velocity = (int)memberWorkItems.Where(w => w.State == "Closed").Sum(w => w.StoryPoints);
+            }
             return teamMembers;
         }
 
@@ -38,7 +49,8 @@ namespace Sprinterly.Services
             var teamsResult = await _devOpsService.MakeDevOpsCall<DevOpsDTO<TeamDTO>>(url);
             if (teamsResult != null)
             {
-                var teams = teamsResult.Value.Adapt<IEnumerable<Team>>();
+                var teams = _mapper.Map<IEnumerable<Team>>(teamsResult.Value);
+                //var teams = teamsResult.Value.Map<IEnumerable<Team>>();
                 foreach (var team in teams)
                 {
                     var teamMembers = await GetMembersForTeam(organization, projectId, team.Id);
@@ -63,7 +75,8 @@ namespace Sprinterly.Services
                 return null;
             }
             
-            var team = teamResult.Adapt<Team>();
+            var team = _mapper.Map<Team>(teamResult);
+            //var team = teamResult.Map<Team>();
             var teamMembers = await GetMembersForTeam(organization, projectId, teamId);
             team.TeamMembers = teamMembers;
             var teamMembersWithStats = await PopulateTeamMembersWithStats(organization, projectId, teamId, teamMembers, sprintId);
@@ -82,7 +95,8 @@ namespace Sprinterly.Services
             {
                 foreach (var teamMemberDTO in teamMembersResult.Value)
                 {
-                    var teamMember = teamMemberDTO.Details.Adapt<TeamMember>();
+                    var teamMember = _mapper.Map<TeamMember>(teamMemberDTO.Details);
+                    //var teamMember = teamMemberDTO.Details.Map<TeamMember>();
                     teamMembers.Add(teamMember);
                 }
             }

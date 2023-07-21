@@ -1,4 +1,4 @@
-﻿using Mapster;
+﻿using AutoMapper;
 using Sprinterly.Models;
 using Sprinterly.Services.Interfaces;
 
@@ -7,10 +7,13 @@ namespace Sprinterly.Services
     public class ProjectsService : IProjectsService
     {
         private readonly IDevOpsService _devOpsService;
+        private readonly IMapper _mapper;
 
-        public ProjectsService(IDevOpsService devOpsService)
+        public ProjectsService(IDevOpsService devOpsService, 
+            IMapper mapper)
         {
             _devOpsService = devOpsService;
+            _mapper = mapper;
         }
         public async Task<IEnumerable<Project>> GetProjects(string organization)
         {
@@ -19,7 +22,8 @@ namespace Sprinterly.Services
             var projectsResult = await _devOpsService.MakeDevOpsCall<DevOpsDTO<ProjectDTO>>(url);
             if(projectsResult != null)
             {
-                var projects = projectsResult.Value.Adapt<IEnumerable<Project>>();
+                var projects = _mapper.Map<IEnumerable<Project>>(projectsResult.Value);
+                //var projects = projectsResult.Value.Map<IEnumerable<Project>>();
                 return projects;
             }
             else

@@ -1,4 +1,4 @@
-﻿using Mapster;
+﻿using AutoMapper;
 using Sprinterly.Models;
 using Sprinterly.Models.WorkItems;
 using Sprinterly.Services.Interfaces;
@@ -10,14 +10,17 @@ namespace Sprinterly.Services
         private readonly IDevOpsService _devOpsService;
         private readonly IProjectsService _projectsService;
         private readonly ISprintService _sprintService;
+        private readonly IMapper _mapper;
 
         public WorkItemService(IDevOpsService devOpsService,
             IProjectsService projectsService,
-            ISprintService sprintService)
+            ISprintService sprintService,
+            IMapper mapper)
         {
             _devOpsService = devOpsService;
             _projectsService = projectsService;
             _sprintService = sprintService;
+            _mapper = mapper;
         }
         public async Task<IEnumerable<WorkItem>> FetchWorkItemsAsync(string organization, string projectId, string teamId,
             string sprintId, IEnumerable<string> areaPaths)
@@ -57,8 +60,8 @@ namespace Sprinterly.Services
             string url = $"{organization}/{projectId}/_apis/wit/workitems?ids={ids}&api-version=7.0";
 
             var workItemsResponse = await _devOpsService.MakeDevOpsCall<DevOpsDTO<WorkItemDTO>>(url);
-            //SWITCH TO AUTO MAPPER - https://chat.openai.com/share/ab0b5608-a50f-41d2-a796-d60a9bfe04ec
-            var workItems = workItemsResponse.Value.Adapt<List<WorkItem>>();
+            var workItems = _mapper.Map<List<WorkItem>>(workItemsResponse.Value);
+            //var workItems = workItemsResponse.Value.Map<List<WorkItem>>();
             return workItems;
         }
     }

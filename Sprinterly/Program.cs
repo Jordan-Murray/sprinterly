@@ -1,3 +1,5 @@
+using AutoMapper;
+using Sprinterly.Models.AutoMapper_Profiles;
 using Sprinterly.Services;
 using Sprinterly.Services.Interfaces;
 
@@ -17,6 +19,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]);
+
+builder.Services.AddAutoMapper(typeof(WorkItemProfile), typeof(SprintProfile), typeof(BasicMappings));
 
 var app = builder.Build();
 

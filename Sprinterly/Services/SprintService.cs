@@ -1,18 +1,21 @@
 ﻿using Sprinterly.Models.Sprints;
 using Sprinterly.Models;
 using Sprinterly.Services.Interfaces;
-using Mapster;
 using Sprinterly.Models.Teams;
+using AutoMapper;
 
 namespace Sprinterly.Services
 {
     public class SprintService : ISprintService
     {
-        IDevOpsService _devOpsService;
+        private readonly IDevOpsService _devOpsService;
+        private readonly IMapper _mapper;
 
-        public SprintService(IDevOpsService devOpsService)
+        public SprintService(IDevOpsService devOpsService, 
+            IMapper mapper)
         {
             _devOpsService = devOpsService;
+            _mapper = mapper;
         }
         public async Task<IEnumerable<Sprint>> GetSprintsForTeam(string organization, string projectId, string teamId)
         {
@@ -24,7 +27,8 @@ namespace Sprinterly.Services
             {
                 foreach (var sprintDTO in sprintsResult.Value)
                 {
-                    sprintsToReturn.Add(sprintDTO.Adapt<Sprint>());
+                    sprintsToReturn.Add(_mapper.Map<Sprint>(sprintDTO));
+                    //sprintsToReturn.Add(sprintDTO.Map<Sprint>());
                 }
                 return sprintsToReturn;
             }
