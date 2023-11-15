@@ -22,7 +22,11 @@ builder.Services.AddApplicationInsightsTelemetry(builder.Configuration["APPLICAT
 
 builder.Services.AddAutoMapper(typeof(WorkItemProfile), typeof(SprintProfile), typeof(BasicMappings));
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
