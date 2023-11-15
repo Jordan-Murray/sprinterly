@@ -85,4 +85,6 @@ app.UseCors(policy => policy
     .AllowAnyMethod()
     .AllowAnyHeader());
 
+app.UseAiPluginGen();
+
 app.Run();
